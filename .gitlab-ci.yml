@@ -1,0 +1,30 @@
+variables:
+  NODE_VERSION: 10.15.3
+  GIT_STRATEGY: clone
+
+default:
+  cache:
+    paths:
+      - node_modules
+
+  before_script:
+    # - nvm install $NODE_VERSION
+    - nvm use $NODE_VERSION
+    - npm install
+
+stages:
+  - build
+
+UnitTest_Build_Deploy:
+  only:
+    - prepublish
+    - /^feature\/.*/
+    - develop
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/
+  tags:
+    - course_modules_build
+  stage: build
+  script:
+    - bash scripts/build.sh -b $CI_COMMIT_REF_NAME
+    - update2uae -pkg_path ./pkgs -app_id 89 # UAE APP ID
+    - update2uae -pkg_path ./pkgs -app_id 39 # UAE APP ID
